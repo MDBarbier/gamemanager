@@ -1,29 +1,54 @@
-﻿@{
+﻿@model List<gamemanager.Models.GameEntry>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="jumbotron text-center">
-    <h1>My First Bootstrap Page</h1>
-    <p>Resize this responsive page to see the effect!</p>
+    <h1>Game manager</h1>
+    <p>Games I want and am playing</p>
 </div>
 
 <div class="container">
+
     <div class="row">
-        <div class="col-sm-4">
-            <h3>Column 1</h3>
-            <p>Lorem ipsum dolor..</p>
-            <p>Ut enim ad..</p>
+        <div class="col-sm-2">
+            <h3>Id</h3>
         </div>
-        <div class="col-sm-4">
-            <h3>Column 2</h3>
-            <p>Lorem ipsum dolor..</p>
-            <p>Ut enim ad..</p>
+        <div class="col-sm-2">
+            <h3>Name</h3>
         </div>
-        <div class="col-sm-4">
-            <h3>Column 3</h3>
-            <p>Lorem ipsum dolor..</p>
-            <p>Ut enim ad..</p>
+        <div class="col-sm-2">
+            <h3>Genre</h3>
+        </div>
+        <div class="col-sm-2">
+            <h3>Owned</h3>
+        </div>
+        <div class="col-sm-2">
+            <h3>Price</h3>
         </div>
     </div>
+
+    @foreach (var item in Model)
+    {
+    <div class="row">
+        <div class="col-sm-2">
+            <p>@item.Id</p>
+        </div>
+        <div class="col-sm-2">
+            <p>@item.Name</p>
+        </div>
+        <div class="col-sm-2">
+            <p>@item.Genre</p>
+        </div>
+        <div class="col-sm-2">
+            <p>@item.Owned</p>
+        </div>
+        <div class="col-sm-2">
+            <p>@item.Price</p>
+        </div>
+    </div>
+    }
+
 </div>
 

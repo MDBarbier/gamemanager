@@ -12,7 +12,14 @@ namespace gamemanager.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
+
+            //Get a list of data
+            var data = dc.GetAllGames();
+
+            //Pass list to the view as Model
+            return View(data);
         }        
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

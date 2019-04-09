@@ -15,10 +15,26 @@ namespace gamemanager
         public static void Main(string[] args)
         {
             CreateWebHostBuilder(args).Build().Run();
+
+            //var host = new WebHostBuilder()
+            //.UseKestrel()
+            //.UseStartup<Startup>()
+            //.Build();
+
+            //host.Run();
         }
 
+        //public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+        //    WebHost.CreateDefaultBuilder(args)
+        //        .UseStartup<Startup>();
+
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+    WebHost.CreateDefaultBuilder(args)
+        .UseUrls("http://localhost:5010")
+        .UseStartup<Startup>()
+        .ConfigureKestrel((context, options) =>
+        {
+            // Set properties and call methods on options            
+        });
     }
 }

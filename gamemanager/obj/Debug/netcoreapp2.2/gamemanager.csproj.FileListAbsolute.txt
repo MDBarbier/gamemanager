@@ -5,7 +5,6 @@ C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.pdb
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.Views.dll
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.Views.pdb
-C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csproj.CoreCompileInputs.cache
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.RazorAssemblyInfo.cache
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.RazorAssemblyInfo.cs
@@ -27,3 +26,4 @@ C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.dll
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.pdb
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csproj.CopyComplete
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
