@@ -27,27 +27,34 @@
         <div class="col-sm-2">
             <h3>Price</h3>
         </div>
+        <div class="col-sm-2">
+            <h3>Edit</h3>
+        </div>
     </div>
 
     @foreach (var item in Model)
     {
-    <div class="row">
-        <div class="col-sm-2">
-            <p>@item.Id</p>
+        <div class="row">
+            <div class="col-sm-2">
+                <p>@item.Id</p><p></p>
+            </div>
+            <div class="col-sm-2">
+                <p>@item.Name</p>
+            </div>
+            <div class="col-sm-2">
+                <p>@item.Genre</p>
+            </div>
+            <div class="col-sm-2">
+                <p>@item.Owned</p>
+            </div>
+            <div class="col-sm-2">
+                <p>@item.Price</p>
+            </div>
+            <div class="col-sm-2">                
+                <button onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
+            </div>
         </div>
-        <div class="col-sm-2">
-            <p>@item.Name</p>
-        </div>
-        <div class="col-sm-2">
-            <p>@item.Genre</p>
-        </div>
-        <div class="col-sm-2">
-            <p>@item.Owned</p>
-        </div>
-        <div class="col-sm-2">
-            <p>@item.Price</p>
-        </div>
-    </div>
+        
     }
 
 </div>

@@ -50,6 +50,41 @@ namespace gamemanager.Models
             return list;
         }
 
+        internal object GetGame(int id)
+        {
+            GameEntry game = new GameEntry();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from game where id = @p";
+                    cmd.Parameters.AddWithValue("p", id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {                        
+                        while (reader.Read())
+                        {
+                           game = new GameEntry()
+                            {
+                                Id = (long)reader["id"],
+                                Name = reader["name"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Genre = reader["genre"].ToString(),
+                                Owned = (bool)reader["owned"]
+                            };
+                        }
+                    }
+                }                
+            }
+
+            return game;
+        }
+
         public List<GameEntry> GetAllGames()
         {
             List<GameEntry> list = new List<GameEntry>();

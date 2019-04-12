@@ -1,0 +1,37 @@
+﻿@model GameEntry
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>Edit game</h1>
+
+
+<form asp-action="Edit" method="post">
+    <div>
+        <label asp-for="Id"></label>
+        <label asp-for="Id">@Model.Id</label>        
+    </div>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>
+    <div>
+        <label asp-for="Genre"></label>
+        <input asp-for="Genre" />
+        <span asp-validation-for="Genre"></span>
+    </div>
+    <div>
+        <label asp-for="Price"></label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price"></span>
+    </div>
+    <div>
+        <label asp-for="Owned"></label>
+        <input asp-for="Owned" />
+        <span asp-validation-for="Genre"></span>
+    </div>
+    <div>
+        <input type="submit" value="Save" />
+    </div>
+</form>
