@@ -21,35 +21,6 @@ namespace gamemanager.Models
             return new NpgsqlConnection(ConnectionString);
         }
 
-        //Method to get data
-        public List<DLister> GetData()
-        {
-            List<DLister> list = new List<DLister>();
-
-            using (NpgsqlConnection conn = GetConnection())
-            {
-                conn.Open();
-                NpgsqlCommand cmd;
-
-                cmd = new NpgsqlCommand("select * from test_table", conn);
-
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        list.Add(new DLister()
-                        {
-                            Id = (int)reader["id"],
-                            Name = reader["name"].ToString(),
-                            Age = (int)reader["age"]
-                        });
-                    }
-                }
-            }
-
-            return list;
-        }
-
         internal object GetGame(int id)
         {
             GameEntry game = new GameEntry();
@@ -62,27 +33,100 @@ namespace gamemanager.Models
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "select * from game where id = @p";
+                    cmd.CommandText = "select * from games where id = @p";
                     cmd.Parameters.AddWithValue("p", id);
 
                     using (var reader = cmd.ExecuteReader())
-                    {                        
+                    {
                         while (reader.Read())
                         {
-                           game = new GameEntry()
+                            game = new GameEntry()
                             {
                                 Id = (long)reader["id"],
                                 Name = reader["name"].ToString(),
                                 Price = (decimal)reader["price"],
                                 Genre = reader["genre"].ToString(),
-                                Owned = (bool)reader["owned"]
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short?)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short?)-1 : (short)reader["rating"]
                             };
                         }
                     }
-                }                
+                }
             }
 
             return game;
+        }
+
+        internal bool InsertGame(GameEntry game)
+        {
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                try
+                {
+                    // Insert some data
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "INSERT INTO games (name, genre, owned, price, notes, ranking, rating)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7)";
+                        cmd.Parameters.AddWithValue("p", game.Name);
+                        cmd.Parameters.AddWithValue("p2", game.Genre);
+                        cmd.Parameters.AddWithValue("p3", game.Owned);
+                        cmd.Parameters.AddWithValue("p4", game.Price);
+                        cmd.Parameters.AddWithValue("p5", game.Notes);
+                        cmd.Parameters.AddWithValue("p6", game.Ranking);
+                        cmd.Parameters.AddWithValue("p7", game.Rating);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("There was an error trying to insert the row", ex);
+                }
+            }
+
+        }
+
+        internal bool EditGame(GameEntry game)
+        {
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                try
+                {
+                    // Insert some data
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "UPDATE games SET name = @p, genre = @p2, owned = @p3,";
+                        cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7 ";
+                        cmd.CommandText += " WHERE id = @p8";
+                        cmd.Parameters.AddWithValue("p", game.Name);
+                        cmd.Parameters.AddWithValue("p2", game.Genre);
+                        cmd.Parameters.AddWithValue("p3", game.Owned);
+                        cmd.Parameters.AddWithValue("p4", game.Price);
+                        cmd.Parameters.AddWithValue("p5", game.Notes);
+                        cmd.Parameters.AddWithValue("p6", game.Ranking);
+                        cmd.Parameters.AddWithValue("p7", game.Rating);
+                        cmd.Parameters.AddWithValue("p8", game.Id);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("There was an error trying to insert the row", ex);
+                }
+            }
+
         }
 
         public List<GameEntry> GetAllGames()
@@ -106,7 +150,10 @@ namespace gamemanager.Models
                             Name = reader["name"].ToString(),
                             Price = (decimal)reader["price"],
                             Genre = reader["genre"].ToString(),
-                            Owned = (bool)reader["owned"]
+                            Owned = (bool)reader["owned"],
+                            Notes = reader["notes"].ToString(),
+                            Ranking = reader["ranking"] == DBNull.Value ? (short?)-1 : (short)reader["ranking"],
+                            Rating = reader["rating"] == DBNull.Value ? (short?)-1 : (short)reader["rating"]
                         });
                     }
                 }
@@ -116,7 +163,7 @@ namespace gamemanager.Models
         }
 
         private void InsertNewRow(string name, string age)
-        {            
+        {
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();

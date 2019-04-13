@@ -6,10 +6,10 @@
 <h1>Edit game</h1>
 
 
-<form asp-action="Edit" method="post">
+<form asp-action="Save" method="post">
     <div>
         <label asp-for="Id"></label>
-        <label asp-for="Id">@Model.Id</label>        
+        <input asp-for="Id" readonly/>
     </div>
     <div>
         <label asp-for="Name"></label>
@@ -29,8 +29,24 @@
     <div>
         <label asp-for="Owned"></label>
         <input asp-for="Owned" />
-        <span asp-validation-for="Genre"></span>
+        <span asp-validation-for="Owned"></span>
     </div>
+    <div>
+        <label asp-for="Notes"></label>
+        <input asp-for="Notes" />
+        <span asp-validation-for="Notes"></span>
+    </div>
+    <div>
+        <label asp-for="Rating"></label>
+        <input asp-for="Rating" />
+        <span asp-validation-for="Rating"></span>
+    </div>
+    <div>
+        <label asp-for="Ranking"></label>
+        <input asp-for="Ranking" />
+        <span asp-validation-for="Ranking"></span>
+    </div>
+    @Html.AntiForgeryToken()
     <div>
         <input type="submit" value="Save" />
     </div>

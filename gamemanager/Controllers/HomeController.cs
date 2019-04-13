@@ -10,8 +10,6 @@ namespace gamemanager.Controllers
     {
         public IActionResult Index()
         {
-
-#if RELEASE
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
@@ -20,51 +18,29 @@ namespace gamemanager.Controllers
 
             //Pass list to the view as Model
             return View(data);
-#endif
 
-#if DEBUG
-            var data = new List<GameEntry>() {
-                new GameEntry() { Id = 1, Name = "Skyrim", Genre = "RPG", Owned = true, Price = 9.99M},
-                new GameEntry() { Id = 2, Name = "Wargroove", Genre = "Strategy", Owned = true, Price = 12.99M},
-                new GameEntry() { Id = 3, Name = "MTGA", Genre = "CCG", Owned = true, Price = 0.00M},
-            };
-
-            return View(data);
-#endif
         }     
         
         public IActionResult Edit(int id)
         {
-            //Get the game that relates to the id provided
-#if RELEASE
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            //Get a list of data
+            //Get the game that relates to the id provided
             var data = dc.GetGame(id);
 
             //Pass list to the view as Model
             return View(data);
-#endif
+        }
 
-#if DEBUG
-            switch (id)
-            {
-                case 1:
-                    return View(new GameEntry() { Id = 1, Name = "Skyrim", Genre = "RPG", Owned = true, Price = 9.99M });
-                    
-                case 2:
-                    return View(new GameEntry() { Id = 2, Name = "Wargroove", Genre = "Strategy", Owned = true, Price = 12.99M });
-                    
-                case 3:
-                    return View(new GameEntry() { Id = 3, Name = "MTGA", Genre = "CCG", Owned = true, Price = 0.00M });
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Save(GameEntry game)
+        {
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-                default:
-                    throw new Exception("Unrecoginised Id");
-            }            
-#endif
-
-            //Load the Edit view passing in that game object
+            var outcomeOfSave = dc.EditGame(game);
+            return Content("Saved!");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
