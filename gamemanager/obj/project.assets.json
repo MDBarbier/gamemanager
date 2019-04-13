@@ -7566,12 +7566,11 @@
       ]
     },
     "Microsoft.NETCore.Targets/2.0.0": {
-      "sha512": "mJnCMoBfWL0lxxlBFJ/8cZKTfPpI82TekZkUqvSCBtunUaaqr2LVeWl1zQYdanAdk4Ddf1HCwb8+DNYaNFBk1w==",
+      "sha512": "odP/tJj1z6GylFpNo7pMtbd/xQgTC3Ex2If63dRTL38bBNMwsBnJ+RceUIyHdRBC0oik/3NehYT+oECwBhIM3Q==",
       "type": "package",
       "path": "microsoft.netcore.targets/2.0.0",
       "files": [
         ".nupkg.metadata",
-        ".signature.p7s",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "lib/netstandard1.0/_._",
@@ -10014,7 +10013,7 @@
       ]
     },
     "System.IO.Pipelines/4.5.2": {
-      "sha512": "w+rt22tsDE5mwCZ+erMQMXfkoGwJL1RWlZxq49WD2/tLDnzHjoV5b/a3ns0tJdtP+SyR7JJO+6IFe8EWOHjTIg==",
+      "sha512": "NOC/SO4gSX6t0tB25xxDPqPEzkksuzW7NVFBTQGAkjXXUPQl7ZtyE83T7tUCP2huFBbPombfCKvq1Ox1aG8D9w==",
       "type": "package",
       "path": "system.io.pipelines/4.5.2",
       "files": [
@@ -11174,7 +11173,7 @@
       ]
     },
     "System.Runtime.CompilerServices.Unsafe/4.5.2": {
-      "sha512": "hMkdWxksypQlFXB7JamQegDscxEAQO4FHd/lw/zlSZU9dZgAij65xjCrXer183wvoNAzJic5zzjj2oc9/dloWg==",
+      "sha512": "wprSFgext8cwqymChhrBLu62LMg/1u92bU+VOwyfBimSPVFXtsNqEWC92Pf9ofzJFlk4IHmJA75EDJn1b2goAQ==",
       "type": "package",
       "path": "system.runtime.compilerservices.unsafe/4.5.2",
       "files": [
@@ -13131,23 +13130,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\matth\\.nuget\\packages\\": {},
+    "C:\\Users\\matt\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
+      "projectUniqueName": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
       "projectName": "gamemanager",
-      "projectPath": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
-      "packagesPath": "C:\\Users\\matth\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\obj\\",
+      "projectPath": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
+      "packagesPath": "C:\\Users\\matt\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\matth\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\matt\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

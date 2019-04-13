@@ -42,14 +42,14 @@ namespace gamemanager.Models
                         {
                             game = new GameEntry()
                             {
-                                Id = (long)reader["id"],
+                                Id = (int)reader["id"],
                                 Name = reader["name"].ToString(),
                                 Price = (decimal)reader["price"],
                                 Genre = reader["genre"].ToString(),
                                 Owned = (bool)reader["owned"],
                                 Notes = reader["notes"].ToString(),
-                                Ranking = reader["ranking"] == DBNull.Value ? (short?)-1 : (short)reader["ranking"],
-                                Rating = reader["rating"] == DBNull.Value ? (short?)-1 : (short)reader["rating"]
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
                             };
                         }
                     }
@@ -73,13 +73,39 @@ namespace gamemanager.Models
                         cmd.Connection = conn;
                         cmd.CommandText = "INSERT INTO games (name, genre, owned, price, notes, ranking, rating)";
                         cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7)";
-                        cmd.Parameters.AddWithValue("p", game.Name);
-                        cmd.Parameters.AddWithValue("p2", game.Genre);
+                       
+                        if (game.Name != null)
+                        {
+                            cmd.Parameters.AddWithValue("p", game.Name);
+                        }
+                        else
+                        {
+                            throw new Exception("Name cannot be null!");
+                        }
+
+                        if (game.Genre != null)
+                        {
+                            cmd.Parameters.AddWithValue("p2", game.Genre);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p2", DBNull.Value);
+                        }
+
+                        if (game.Notes != null)
+                        {
+                            cmd.Parameters.AddWithValue("p5", game.Notes);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p5", DBNull.Value);
+                        }
+
                         cmd.Parameters.AddWithValue("p3", game.Owned);
                         cmd.Parameters.AddWithValue("p4", game.Price);
-                        cmd.Parameters.AddWithValue("p5", game.Notes);
                         cmd.Parameters.AddWithValue("p6", game.Ranking);
                         cmd.Parameters.AddWithValue("p7", game.Rating);
+
                         cmd.ExecuteNonQuery();
                     }
 
@@ -108,14 +134,45 @@ namespace gamemanager.Models
                         cmd.CommandText = "UPDATE games SET name = @p, genre = @p2, owned = @p3,";
                         cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7 ";
                         cmd.CommandText += " WHERE id = @p8";
-                        cmd.Parameters.AddWithValue("p", game.Name);
-                        cmd.Parameters.AddWithValue("p2", game.Genre);
+
+                        if (game.Id == 0)
+                        {
+                            throw new Exception("Id cannot be 0!");
+                        }
+
+                        if (game.Name != null)
+                        {
+                            cmd.Parameters.AddWithValue("p", game.Name);
+                        }
+                        else
+                        {
+                            throw new Exception("Name cannot be null!");
+                        }
+
+                        if (game.Genre != null)
+                        {
+                            cmd.Parameters.AddWithValue("p2", game.Genre);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p2", DBNull.Value);
+                        }                       
+                        
+                        if (game.Notes != null)
+                        {
+                            cmd.Parameters.AddWithValue("p5", game.Notes);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p5", DBNull.Value);
+                        }
+
                         cmd.Parameters.AddWithValue("p3", game.Owned);
                         cmd.Parameters.AddWithValue("p4", game.Price);
-                        cmd.Parameters.AddWithValue("p5", game.Notes);
                         cmd.Parameters.AddWithValue("p6", game.Ranking);
                         cmd.Parameters.AddWithValue("p7", game.Rating);
                         cmd.Parameters.AddWithValue("p8", game.Id);
+
                         cmd.ExecuteNonQuery();
                     }
 
@@ -146,14 +203,14 @@ namespace gamemanager.Models
                     {
                         list.Add(new GameEntry()
                         {
-                            Id = (long)reader["id"],
+                            Id = (int)reader["id"],
                             Name = reader["name"].ToString(),
                             Price = (decimal)reader["price"],
                             Genre = reader["genre"].ToString(),
                             Owned = (bool)reader["owned"],
                             Notes = reader["notes"].ToString(),
-                            Ranking = reader["ranking"] == DBNull.Value ? (short?)-1 : (short)reader["ranking"],
-                            Rating = reader["rating"] == DBNull.Value ? (short?)-1 : (short)reader["rating"]
+                            Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                            Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
                         });
                     }
                 }

@@ -32,7 +32,6 @@ C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\g
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.pdb
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.Views.dll
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\bin\Debug\netcoreapp2.2\gamemanager.Views.pdb
-C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csproj.CoreCompileInputs.cache
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.RazorAssemblyInfo.cache
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.RazorAssemblyInfo.cs
@@ -56,3 +55,5 @@ C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\g
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\Edit.g.cshtml.cs
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\Edit.g.cshtml.cs
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
+C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\New.g.cshtml.cs
+C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache

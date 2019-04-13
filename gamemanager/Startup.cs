@@ -31,7 +31,14 @@ namespace gamemanager
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             //This line has been added so that the application registers the db context for use - it gets its connection string from appsettings.json
-            services.Add(new ServiceDescriptor(typeof(DataContext), new DataContext(Configuration.GetConnectionString("DefaultConnection"))));
+            Code.AppSettingManager appSettingManager = Code.AppSettingManager.Instance;
+            string connectionString = Configuration.GetConnectionString("DefaultConnection");
+            connectionString = connectionString
+                .Replace("__host__", appSettingManager.GetSetting("host"))
+                .Replace("__username__", appSettingManager.GetSetting("username"))
+                .Replace("__password__", appSettingManager.GetSetting("password"));
+
+            services.Add(new ServiceDescriptor(typeof(DataContext), new DataContext(connectionString)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
