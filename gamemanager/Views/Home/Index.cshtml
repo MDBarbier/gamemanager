@@ -5,9 +5,10 @@
     
 }
 
+
 <div class="jumbotron text-center">
-    <h1>Game manager</h1>
-    <p>Games I want and am playing</p>
+    <h1>Games</h1>
+    <p>The games I own and the ones I want</p>
 </div>
 
 <div class="container">
@@ -44,6 +45,7 @@
                             var computedRanking = item.Owned ? "N/A" : item.Ranking.ToString();
                             var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
                             var computedOwnership = item.Owned ? "Yes" : "No";
+                            var computedRating = item.Owned ? item.Rating.ToString() : "N/A";
                         <tr>
 
                             <td>@item.Id</td>
@@ -51,12 +53,11 @@
                             <td>@item.Genre</td>
                             <td>@computedOwnership</td>
                             <td>@computedPrice</td>
-                            <td>@item.Rating</td>
+                            <td>@computedRating</td>
                             <td>@computedRanking</td>
                             <td>
                                 <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
-                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("AddDlc", "Home", new { id = item.Id })'" title="AddDlc" value="AddDlc">Add Dlc</button>
-                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("ViewDlc", "Home", new { id = item.Id })'" title="ViewDlc" value="ViewDlc">View Dlc</button>
+                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("ViewDlc", "Dlc", new { id = item.Id })'" title="ViewDlc" value="ViewDlc">View Dlc</button>
                             </td>
 
                         </tr>

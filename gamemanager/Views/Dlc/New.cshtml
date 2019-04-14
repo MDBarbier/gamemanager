@@ -1,0 +1,52 @@
+﻿@model gamemanager.ViewModels.DlcViewModel
+
+@{
+    ViewData["Title"] = "New Dlc";
+}
+
+<h1>Add new game</h1>
+
+<form asp-action="SaveNewDlc" method="post">
+    <div>
+        <label asp-for="Id"></label>
+        <input asp-for="Id" readonly hidden />
+    </div>    
+    <div>
+        <select asp-for="ParentGameId" asp-items="@Model.PotentialParentGames"></select>
+    </div>
+    <div>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" />
+        <span asp-validation-for="Name"></span>
+    </div>    
+    <div>
+        <label asp-for="Price"></label>
+        <input asp-for="Price" />
+        <span asp-validation-for="Price"></span>
+    </div>
+    <div>
+        <label asp-for="Owned"></label>
+        <input asp-for="Owned" />
+        <span asp-validation-for="Owned"></span>
+    </div>
+    <div>
+        <label asp-for="Notes"></label>
+        <input asp-for="Notes" />
+        <span asp-validation-for="Notes"></span>
+    </div>
+    <div>
+        <label asp-for="Rating"></label>
+        <input asp-for="Rating" />
+        <span asp-validation-for="Rating"></span>
+    </div>
+    <div>
+        <label asp-for="Ranking"></label>
+        <input asp-for="Ranking" />
+        <span asp-validation-for="Ranking"></span>
+    </div>
+    @Html.AntiForgeryToken()
+    <div>
+        <input type="submit" value="Save" />
+    </div>
+</form>
+

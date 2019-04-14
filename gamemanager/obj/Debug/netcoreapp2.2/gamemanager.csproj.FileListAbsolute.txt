@@ -54,8 +54,14 @@ C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\g
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csproj.CopyComplete
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\Edit.g.cshtml.cs
 C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\Edit.g.cshtml.cs
-C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\New.g.cshtml.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\AddDlc.g.cshtml.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\ViewDlc.g.cshtml.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Home\New.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Shared\_Navbar.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\Index.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\AddDlc.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\ViewDlc.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\Edit.g.cshtml.cs
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\New.g.cshtml.cs
