@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace gamemanager
 {
@@ -27,6 +28,12 @@ namespace gamemanager
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            /*---MDB This section is needed to enable session---*/
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
+            });
+            /*--------------------------------------------------*/
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
@@ -55,6 +62,10 @@ namespace gamemanager
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            /*---MDB This section is needed to enable session---*/
+            app.UseSession();
+            /*--------------------------------------------------*/
 
             app.UseMvc(routes =>
             {

@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    
 }
 
 <div class="jumbotron text-center">
@@ -10,6 +11,16 @@
 </div>
 
 <div class="container">
+
+    @{//check for message in viewbag
+   string message = ViewBag.Message == null ? string.Empty : ViewBag.Message;}
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+    <div class="alert alert-primary">
+        <strong>Message</strong> @message
+    </div>
+    }
 
     <div class="row">
         <div class="table table-striped">
@@ -23,23 +34,30 @@
                         <th>Price</th>
                         <th>Rating</th>
                         <th>Ranking</th>
-                        <th>Edit</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         @foreach (var item in Model)
                         {
+                            var computedRanking = item.Owned ? "N/A" : item.Ranking.ToString();
+                            var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
+                            var computedOwnership = item.Owned ? "Yes" : "No";
                         <tr>
 
                             <td>@item.Id</td>
                             <td>@item.Name</td>
                             <td>@item.Genre</td>
-                            <td>@item.Owned</td>
-                            <td>@item.Price</td>
+                            <td>@computedOwnership</td>
+                            <td>@computedPrice</td>
                             <td>@item.Rating</td>
-                            <td>@item.Ranking</td>
-                            <td><button class="btn btn-default" onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button></td>
+                            <td>@computedRanking</td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
+                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("AddDlc", "Home", new { id = item.Id })'" title="AddDlc" value="AddDlc">Add Dlc</button>
+                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("ViewDlc", "Home", new { id = item.Id })'" title="ViewDlc" value="ViewDlc">View Dlc</button>
+                            </td>
 
                         </tr>
 
@@ -49,9 +67,9 @@
             </div>
         </div>
 
-    <div class="row">
-        <div class="col-12"><button class="btn btn-primary" onclick="location.href='@Url.Action("New", "Home")'" title="New" value="New">New</button></div>
-    </div>
+        <div class="row">
+            <div class="col-12"><button class="btn btn-primary" onclick="location.href='@Url.Action("New", "Home")'" title="New" value="New">New Game</button></div>
+        </div>
 
     </div>
 

@@ -8,7 +8,7 @@ namespace gamemanager.Models
     {
         //Property to hold connection string
         public string ConnectionString { get; set; }
-
+        
         //Constructor
         public DataContext(string connectionString)
         {
@@ -21,7 +21,7 @@ namespace gamemanager.Models
             return new NpgsqlConnection(ConnectionString);
         }
 
-        internal object GetGame(int id)
+        internal GameEntry GetGame(int id)
         {
             GameEntry game = new GameEntry();
 
@@ -57,6 +57,40 @@ namespace gamemanager.Models
             }
 
             return game;
+        }
+
+        internal Dictionary<int, Dlc> GetDlcForGame(int id)
+        {
+            Dictionary<int, Dlc> data = new Dictionary<int, Dlc>();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                NpgsqlCommand cmd;
+
+                cmd = new NpgsqlCommand("select * from dlc where parentgameid = @p ", conn);
+                cmd.Parameters.AddWithValue("p", id);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        data.Add((int)reader["id"], new Dlc()
+                        {
+                            ParentGameId = (long)reader["parentgameid"],
+                            Id = (int)reader["id"],
+                            Name = reader["name"].ToString(),
+                            Price = (decimal)reader["price"],                            
+                            Owned = (bool)reader["owned"],
+                            Notes = reader["notes"].ToString(),
+                            Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                            Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                        });
+                    }
+                }
+            }
+
+            return data;
         }
 
         internal bool InsertGame(GameEntry game)
@@ -117,6 +151,65 @@ namespace gamemanager.Models
                 }
             }
 
+        }
+
+        internal bool InsertDlc(Dlc dlc)
+        {
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                try
+                {
+                    // Insert some data
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "INSERT INTO dlc (parentgameid, name, owned, price, notes, ranking, rating)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7)";
+
+                        if (dlc.Name != null)
+                        {
+                            cmd.Parameters.AddWithValue("p2", dlc.Name);
+                        }
+                        else
+                        {
+                            throw new Exception("Name cannot be null!");
+                        }
+
+                        if (dlc.ParentGameId != 0)
+                        {
+                            cmd.Parameters.AddWithValue("p", dlc.ParentGameId);
+                        }
+                        else
+                        {
+                            throw new Exception("Parent game ID cannot be zero!");
+                        }
+
+                        if (dlc.Notes != null)
+                        {
+                            cmd.Parameters.AddWithValue("p5", dlc.Notes);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p5", DBNull.Value);
+                        }
+
+                        cmd.Parameters.AddWithValue("p3", dlc.Owned);
+                        cmd.Parameters.AddWithValue("p4", dlc.Price);
+                        cmd.Parameters.AddWithValue("p6", dlc.Ranking);
+                        cmd.Parameters.AddWithValue("p7", dlc.Rating);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("There was an error trying to insert the row", ex);
+                }
+            }
         }
 
         internal bool EditGame(GameEntry game)
@@ -217,30 +310,6 @@ namespace gamemanager.Models
             }
 
             return list;
-        }
-
-        private void InsertNewRow(string name, string age)
-        {
-            using (NpgsqlConnection conn = GetConnection())
-            {
-                conn.Open();
-
-                bool result = int.TryParse(age, out int parsedAge);
-
-                if (!result)
-                    throw new ArgumentException("The value passed in for age was not a valid number");
-
-                // Insert some data
-                using (var cmd = new NpgsqlCommand())
-                {
-                    cmd.Connection = conn;
-                    cmd.CommandText = "INSERT INTO test_table (name, age) VALUES (@p, @p2)";
-                    cmd.Parameters.AddWithValue("p", name);
-                    cmd.Parameters.AddWithValue("p2", parsedAge);
-                    cmd.ExecuteNonQuery();
-                }
-            }
-
-        }
+        }       
     }
 }
