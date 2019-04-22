@@ -1,31 +1,56 @@
 ﻿using gamemanager.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace gamemanager.Controllers
 {
     public class HomeController : Controller
     {
         public IActionResult Index()
-        {            
+        {
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            //Get a list of data
-            var data = dc.GetAllGames();
+            //Check for OnlyOwned variables            
+            bool ShowOwned = string.IsNullOrEmpty(HttpContext.Session.GetString("ShowOwned")) ? false : (HttpContext.Session.GetString("ShowOwned").ToLower() == "true") ? true : false;
+
+            //Get a list of data 
+            List<GameEntry> data = new List<GameEntry>();
+            if (ShowOwned)
+            {
+                data = dc.GetAllGames();
+                ViewBag.ShowOwned = "checked";
+            }
+            else
+            {
+                data =  dc.GetAllGames().Where(a => a.Owned == false).ToList();
+                ViewBag.ShowOwned = "";
+            }
 
             //Assign any message to the viewbag      
-           string message = HttpContext.Session.GetString("Message");
+            string message = HttpContext.Session.GetString("Message");
             ViewBag.Message = message;
 
             //Clear message out so it's not shown multiple times
             HttpContext.Session.Remove("Message");
 
+            //sort list by ranking
+            data = data.OrderBy(a => a.Ranking).ToList();
+
             //Pass list to the view as Model
             return View(data);
 
-        }     
+        }
+
+        public IActionResult OnlyOwned(bool status)
+        {
+            HttpContext.Session.SetString("ShowOwned", status.ToString());            
+            
+            return RedirectToAction("Index");
+        }
 
         public IActionResult New()
         {

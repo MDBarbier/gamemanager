@@ -2,10 +2,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using System;
+using System.Linq;
 
 namespace gamemanager
 {
@@ -24,14 +27,18 @@ namespace gamemanager
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => false;
+                options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
             /*---MDB This section is needed to enable session---*/
-            services.AddDistributedMemoryCache();
+            services.AddDistributedMemoryCache();                        
             services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(1);
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromMinutes(5);
+                options.Cookie.HttpOnly = true;
+                // Make the session cookie essential
+                options.Cookie.IsEssential = true;
             });
             /*--------------------------------------------------*/
 
@@ -57,11 +64,36 @@ namespace gamemanager
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseDeveloperExceptionPage();
+                //app.UseExceptionHandler("/Home/Error"); //enable this on custom error page once development finished
             }
 
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+            app.UseCookiePolicy();            
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.All
+            });
+
+            //app.UseFileServer(new FileServerOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(@"\\server\path"),
+            //    RequestPath = new PathString("/games"),
+            //    EnableDirectoryBrowsing = false
+            //});
+
+            // Patch path base with forwarded path
+            app.Use(async (context, next) =>
+            {
+                var forwardedPath = context.Request.Headers["X-Forwarded-Path"].FirstOrDefault();
+                if (!string.IsNullOrEmpty(forwardedPath))
+                {
+                    context.Request.PathBase = forwardedPath;
+                }
+
+                await next();
+            });
 
             /*---MDB This section is needed to enable session---*/
             app.UseSession();

@@ -1,20 +1,18 @@
 ﻿@model List<gamemanager.Models.GameEntry>
 
 @{
-    ViewData["Title"] = "Home Page";
-    
+    ViewData["Title"] = "Home Page";    
 }
 
 
 <div class="jumbotron text-center">
-    <h1>Games</h1>
-    <p>The games I own and the ones I want</p>
+    <h1>Games</h1>    
 </div>
 
 <div class="container">
 
     @{//check for message in viewbag
-   string message = ViewBag.Message == null ? string.Empty : ViewBag.Message;}
+        string message = ViewBag.Message == null ? string.Empty : ViewBag.Message;}
 
     @if (!string.IsNullOrEmpty(message))
     {
@@ -24,11 +22,20 @@
     }
 
     <div class="row">
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input showOwnedCB" name="showOwned" id="showOwned" value="" @ViewBag.ShowOwned>Show owned games
+            </label>
+        </div>
+
+    </div>
+
+    <div class="row">
         <div class="table table-striped">
             <table>
                 <thead>
-                    <tr>
-                        <th>Id</th>
+                    <tr>                        
                         <th>Name</th>
                         <th>Genre</th>
                         <th>Owned</th>
@@ -46,21 +53,19 @@
                             var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
                             var computedOwnership = item.Owned ? "Yes" : "No";
                             var computedRating = item.Owned ? item.Rating.ToString() : "N/A";
-                        <tr>
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Genre</td>
+                        <td>@computedOwnership</td>
+                        <td>@computedPrice</td>
+                        <td>@computedRating</td>
+                        <td>@computedRanking</td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
+                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("ViewDlc", "Dlc", new { id = item.Id })'" title="ViewDlc" value="ViewDlc">View Dlc</button>
+                        </td>
 
-                            <td>@item.Id</td>
-                            <td>@item.Name</td>
-                            <td>@item.Genre</td>
-                            <td>@computedOwnership</td>
-                            <td>@computedPrice</td>
-                            <td>@computedRating</td>
-                            <td>@computedRanking</td>
-                            <td>
-                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Home", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
-                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("ViewDlc", "Dlc", new { id = item.Id })'" title="ViewDlc" value="ViewDlc">View Dlc</button>
-                            </td>
-
-                        </tr>
+                    </tr>
 
                     }
                     </tbody>
@@ -74,3 +79,4 @@
 
     </div>
 
+<script src="~/js/PageScripts/home.js"></script>

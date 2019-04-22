@@ -9,11 +9,18 @@ namespace gamemanager.Code
 {
     public sealed class AppSettingManager
     {
-        public string Path { get; } = @"C:\AppSettings\Settings.json";
+        public string Path { get; }
         public Dictionary<string, string> AppSettings { get; set; } = new Dictionary<string, string>();
 
         public AppSettingManager()
         {
+
+#if DEBUG
+            Path = @"C:\AppSettings\Settings.json";
+#else
+            Path = @"/dotnetapps/gamemanager/Settings.json";
+#endif
+
             LoadSettings();
         }
 
