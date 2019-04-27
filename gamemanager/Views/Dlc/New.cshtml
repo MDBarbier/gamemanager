@@ -12,37 +12,37 @@
         <input asp-for="Id" readonly hidden />
     </div>    
     <div>
-        <select asp-for="ParentGameId" asp-items="@Model.PotentialParentGames"></select>
+        <select asp-for="ParentGameId" asp-items="@Model.PotentialParentGames"></select>        
     </div>
     <div>
         <label asp-for="Name"></label>
         <input asp-for="Name" />
-        <span asp-validation-for="Name"></span>
+        <span asp-validation-for="Name" class="text-danger"></span>
     </div>    
     <div>
         <label asp-for="Price"></label>
         <input asp-for="Price" />
-        <span asp-validation-for="Price"></span>
+        <span asp-validation-for="Price" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Owned"></label>
         <input asp-for="Owned" />
-        <span asp-validation-for="Owned"></span>
+        <span asp-validation-for="Owned" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Notes"></label>
         <input asp-for="Notes" />
-        <span asp-validation-for="Notes"></span>
+        <span asp-validation-for="Notes" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Rating"></label>
         <input asp-for="Rating" />
-        <span asp-validation-for="Rating"></span>
+        <span asp-validation-for="Rating" class="text-danger"></span>
     </div>
     <div>
         <label asp-for="Ranking"></label>
         <input asp-for="Ranking" />
-        <span asp-validation-for="Ranking"></span>
+        <span asp-validation-for="Ranking" class="text-danger"></span>
     </div>
     @Html.AntiForgeryToken()
     <div>

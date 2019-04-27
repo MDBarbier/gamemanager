@@ -23,6 +23,16 @@
     }
 
     <div class="row">
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input showOwnedCB" name="showOwned" id="showOwned" value="" @ViewBag.ShowOwned>Show owned games
+            </label>
+        </div>
+
+    </div>
+
+    <div class="row">
         <div class="table table-striped">
             <table>
                 <thead>
@@ -45,20 +55,20 @@
                             var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
                             var computedOwnership = item.Owned ? "Yes" : "No";
                             var computedRating = item.Owned ? item.Rating.ToString() : "N/A";
-                    <tr>
+                        <tr>
 
-                        <td>@item.Id</td>
-                        <td>@item.ParentGameName</td>
-                        <td>@item.Name</td>
-                        <td>@computedOwnership</td>
-                        <td>@computedPrice</td>
-                        <td>@computedRating</td>
-                        <td>@computedRanking</td>
-                        <td>
-                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Dlc", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
-                        </td>
+                            <td>@item.Id</td>
+                            <td>@item.ParentGameName</td>
+                            <td>@item.Name</td>
+                            <td>@computedOwnership</td>
+                            <td>@computedPrice</td>
+                            <td>@computedRating</td>
+                            <td>@computedRanking</td>
+                            <td>
+                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Dlc", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
+                            </td>
 
-                    </tr>
+                        </tr>
 
                     }
                     </tbody>
@@ -72,3 +82,4 @@
 
     </div>
 
+<script src="~/js/PageScripts/dlc.js"></script>

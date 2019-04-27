@@ -13,11 +13,26 @@ namespace gamemanager.Controllers
     {
         public IActionResult Index()
         {
+            List<Dlc> data;
+
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
+            //Check for OnlyOwned variables            
+            bool ShowOwned = string.IsNullOrEmpty(HttpContext.Session.GetString("ShowOwned")) ? false : (HttpContext.Session.GetString("ShowOwned").ToLower() == "true") ? true : false;
+
             //Get a list of data
-            List<Dlc> data = dc.GetAllDlc();
+            if (ShowOwned)
+            {
+                data = dc.GetAllDlc();
+                ViewBag.ShowOwned = "checked";
+            }
+            else
+            {
+                data = dc.GetAllDlc().Where(a => a.Owned == false).ToList();
+                ViewBag.ShowOwned = "";
+            }
+            
             List<GameEntry> games = dc.GetAllGames();
             List<DlcViewModel> dlcViewModel = new List<DlcViewModel>();
 
@@ -70,6 +85,13 @@ namespace gamemanager.Controllers
             return View(g);
         }
 
+        public IActionResult OnlyOwned(bool status)
+        {
+            HttpContext.Session.SetString("ShowOwned", status.ToString());
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Save(Dlc dlc)
         {
@@ -89,11 +111,24 @@ namespace gamemanager.Controllers
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.InsertDlc(dlc);
-
-            if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
-
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                bool outcomeOfSave = dc.InsertDlc(dlc);
+                if (outcomeOfSave) HttpContext.Session.SetString("Message", "Dlc Saved");
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                //repopulate list of games to populate the parent game dropdown list
+                var games = dc.GetAllGames().Select(g => (g.Id, g.Name)).ToList();
+                
+                //assign the list of possible parent games to the games property of the vm
+                foreach (var (Id, Name) in games)
+                {
+                    dlc.PotentialParentGames.Add(new SelectListItem(Name, Id.ToString()));
+                }
+                return View("New", dlc);
+            }
         }
 
         public IActionResult Edit(int id)

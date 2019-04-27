@@ -159,6 +159,33 @@ namespace gamemanager.Models
             return game;
         }
 
+        internal bool DeleteGame(int id)
+        {            
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+               
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "delete from games where id = @p";
+                    cmd.Parameters.AddWithValue("p", id);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+                        return true;
+                    }
+                    catch (Exception dex)
+                    {
+                        throw new Exception("There was a problem trying to delete the record", dex);
+                    }
+                }
+            }
+        }
+
         internal Dlc GetDlc(int id)
         {
             Dlc game = new Dlc();

@@ -1,4 +1,5 @@
 ﻿using gamemanager.Models;
+using gamemanager.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -45,6 +46,19 @@ namespace gamemanager.Controllers
 
         }
 
+        [HttpGet]
+        public IActionResult Delete(int Id)
+        {
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
+
+            bool outcomeOfDelete = dc.DeleteGame(Id);
+
+            if (outcomeOfDelete) HttpContext.Session.SetString("Message", "Game deleted");
+
+            return RedirectToAction("Index");            
+        }
+
         public IActionResult OnlyOwned(bool status)
         {
             HttpContext.Session.SetString("ShowOwned", status.ToString());            
@@ -54,9 +68,9 @@ namespace gamemanager.Controllers
 
         public IActionResult New()
         {
-            return View();
+            return View(new GameViewModel());
         }
-        
+
         public IActionResult Edit(int id)
         {
             //This row uses setup in the Startup.cs file
@@ -83,16 +97,22 @@ namespace gamemanager.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult SaveNew(GameEntry game)
+        public IActionResult SaveNew(GameViewModel game)
         {
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.InsertGame(game);
-
-            if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
-
-            return RedirectToAction("Index");
+            if (ModelState.IsValid)
+            {
+                bool outcomeOfSave = dc.InsertGame((GameEntry)game);
+                if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View("New", game);
+            }
+            
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
