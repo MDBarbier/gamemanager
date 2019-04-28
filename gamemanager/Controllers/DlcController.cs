@@ -57,6 +57,9 @@ namespace gamemanager.Controllers
                 dlcViewModel.Add(dlcvm);
             }
 
+            //sort list by ranking
+            dlcViewModel = dlcViewModel.OrderBy(a => a.Ranking).ToList();
+
             //Assign any message to the viewbag      
             string message = HttpContext.Session.GetString("Message");
             ViewBag.Message = message;
@@ -66,6 +69,19 @@ namespace gamemanager.Controllers
 
             //Pass list to the view as Model
             return View(dlcViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult Delete(int Id)
+        {
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
+
+            bool outcomeOfDelete = dc.DeleteDlc(Id);
+
+            if (outcomeOfDelete) HttpContext.Session.SetString("Message", "Dlc deleted");
+
+            return RedirectToAction("Index");
         }
 
         public IActionResult AddDlc(int Id)
@@ -98,7 +114,7 @@ namespace gamemanager.Controllers
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.EditDlc(dlc);
+            bool outcomeOfSave = dc.EditDlc(dlc, true);
 
             if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
 
@@ -113,6 +129,19 @@ namespace gamemanager.Controllers
 
             if (ModelState.IsValid)
             {
+                if (dlc.Ranking == 0)
+                {
+                    try
+                    {
+                        dlc.Ranking = short.Parse(dc.GetNextRanking(Code.ItemType.Dlc));
+                    }
+                    catch (System.Exception ex)
+                    {
+                        HttpContext.Session.SetString("Message", "Error trying to get next available rank: " + ex.Message);
+                        return RedirectToAction("Index");
+                    }
+                }
+
                 bool outcomeOfSave = dc.InsertDlc(dlc);
                 if (outcomeOfSave) HttpContext.Session.SetString("Message", "Dlc Saved");
                 return RedirectToAction("Index");

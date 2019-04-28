@@ -89,7 +89,7 @@ namespace gamemanager.Controllers
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.EditGame(game);
+            bool outcomeOfSave = dc.EditGame(game, true);
             
             if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");            
 
@@ -104,6 +104,19 @@ namespace gamemanager.Controllers
 
             if (ModelState.IsValid)
             {
+                if (game.Ranking == 0)
+                {
+                    try
+                    {
+                        game.Ranking = short.Parse(dc.GetNextRanking(Code.ItemType.Game));
+                    }
+                    catch (System.Exception ex)
+                    {
+                        HttpContext.Session.SetString("Message", "Error trying to get next available rank: " + ex.Message);
+                        return RedirectToAction("Index");
+                    }
+                }
+
                 bool outcomeOfSave = dc.InsertGame((GameEntry)game);
                 if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
                 return RedirectToAction("Index");

@@ -68,4 +68,3 @@ C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\R
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\New.g.cshtml.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Dlc\ViewDlc.g.cshtml.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\Shared\_Navbar.g.cshtml.cs
-C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache

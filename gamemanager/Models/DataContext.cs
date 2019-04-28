@@ -1,6 +1,8 @@
-﻿using Npgsql;
+﻿using gamemanager.Code;
+using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace gamemanager.Models
 {
@@ -19,6 +21,59 @@ namespace gamemanager.Models
         private NpgsqlConnection GetConnection()
         {
             return new NpgsqlConnection(ConnectionString);
+        }
+
+        internal string GetNextRanking(ItemType itemType)
+        {
+            int possibleRank = 1;
+            bool foundFreeRanking = false;
+
+            switch (itemType)
+            {
+                case ItemType.Game:
+
+                    var games = GetAllGames().Where(a => a.Owned == false);
+
+                    while (!foundFreeRanking)
+                    {
+                        var match = games.Where(a => a.Ranking == possibleRank).FirstOrDefault();
+
+                        if (match == null)
+                        {
+                            foundFreeRanking = true;
+                            continue;
+                        }
+
+                        possibleRank++;
+                    }
+
+                    break;
+
+                case ItemType.Dlc:
+
+                    var dlcs = GetAllDlc();
+
+                    while (!foundFreeRanking)
+                    {
+                        var match = dlcs.Where(a => a.Ranking == possibleRank).FirstOrDefault();
+
+                        if (match == null)
+                        {
+                            foundFreeRanking = true;
+                            continue;
+                        }
+
+
+                        possibleRank++;
+                    }
+
+                    break;
+
+                default:
+                    throw new Exception("Type not recognised");
+            }
+
+            return possibleRank.ToString();
         }
 
         internal List<Dlc> GetAllDlc()
@@ -54,8 +109,97 @@ namespace gamemanager.Models
             return list;
         }
 
-        internal bool EditDlc(Dlc dlc)
+        internal bool DeleteDlc(int id)
         {
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "delete from dlc where id = @p";
+                    cmd.Parameters.AddWithValue("p", id);
+
+                    try
+                    {
+                        cmd.ExecuteNonQuery();
+
+                        //Ensure rankings consistent
+                        AdjustRankings(ItemType.Dlc);
+
+                        return true;
+                    }
+                    catch (Exception dex)
+                    {
+                        throw new Exception("There was a problem trying to delete the record", dex);
+                    }
+                }
+            }
+        }
+
+        internal void AdjustRankings(ItemType itemType)
+        {
+            int i = 0;
+
+            switch (itemType)
+            {
+                case ItemType.Game:
+
+                    var games = GetAllGames().Where(a => a.Owned == false).ToList().OrderBy(a => a.Ranking);
+                    i = 1;
+                    foreach (var game in games)
+                    {
+                        game.Ranking = (short)i;
+                        var result = EditGame(game);
+                        
+                        if (!result)
+                        {
+                            throw new Exception("There was a problem updating the rankings");
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+
+                    break;
+
+                case ItemType.Dlc:
+
+                    var dlcs = GetAllDlc().Where(a => a.Owned == false).ToList().OrderBy(a => a.Ranking);
+                    i = 1;
+                    foreach (var dlc in dlcs)
+                    {
+                        dlc.Ranking = (short)i;
+                        var result = EditDlc(dlc);
+
+                        if (!result)
+                        {
+                            throw new Exception("There was a problem updating the rankings");
+                        }
+                        else
+                        {
+                            i++;
+                        }
+                    }
+
+                    break;
+
+                default:
+                    throw new Exception("Unrecognised type");
+            }
+        }
+
+        internal bool EditDlc(Dlc dlc, bool adjustRankings = false)
+        {
+            //If the game is owned, adjust rankings accordingly
+            if (dlc.Owned == true)
+            {
+                dlc.Ranking = 0;
+            }
+
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
@@ -119,6 +263,12 @@ namespace gamemanager.Models
                 }
             }
 
+            //Ensure rankings consistent
+            if (adjustRankings)
+            {
+                AdjustRankings(ItemType.Dlc);
+            }
+
         }
 
         internal GameEntry GetGame(int id)
@@ -176,6 +326,10 @@ namespace gamemanager.Models
                     try
                     {
                         cmd.ExecuteNonQuery();
+
+                        //Ensure rankings consistent
+                        AdjustRankings(ItemType.Game);
+
                         return true;
                     }
                     catch (Exception dex)
@@ -377,8 +531,15 @@ namespace gamemanager.Models
             }
         }
 
-        internal bool EditGame(GameEntry game)
+        internal bool EditGame(GameEntry game, bool adjustRankings = false)
         {
+
+            //If the game is owned, adjust rankings accordingly
+            if (game.Owned == true)
+            {
+                game.Ranking = 0;
+            }
+           
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
@@ -441,6 +602,13 @@ namespace gamemanager.Models
                     throw new Exception("There was an error trying to insert the row", ex);
                 }
             }
+
+            //Ensure rankings consistent
+            if (adjustRankings)
+            {
+                AdjustRankings(ItemType.Game);
+            }
+
 
         }
 
