@@ -8,21 +8,34 @@ namespace gamemanager.Models
 {
     public class DataContext
     {
-        //Property to hold connection string
+        /// <summary>
+        /// Property to hold connection string
+        /// </summary>
         public string ConnectionString { get; set; }
-        
-        //Constructor
+
+        /// <summary>
+        /// Constructor that sets the connection string
+        /// </summary>
+        /// <param name="connectionString"></param>
         public DataContext(string connectionString)
         {
             this.ConnectionString = connectionString;
         }
 
-        //Method to acquire a new connection - to be called from "using" statement to ensure lifecycle management
+        /// <summary>
+        /// Method to acquire a new connection - to be called from "using" statement to ensure lifecycle management
+        /// </summary>
+        /// <returns></returns>
         private NpgsqlConnection GetConnection()
         {
             return new NpgsqlConnection(ConnectionString);
         }
 
+        /// <summary>
+        /// Gets the next available ranking
+        /// </summary>
+        /// <param name="itemType"></param>
+        /// <returns></returns>
         internal string GetNextRanking(ItemType itemType)
         {
             int possibleRank = 1;
@@ -76,6 +89,10 @@ namespace gamemanager.Models
             return possibleRank.ToString();
         }
 
+        /// <summary>
+        /// Gets all DLC
+        /// </summary>
+        /// <returns></returns>
         internal List<Dlc> GetAllDlc()
         {
             List<Dlc> list = new List<Dlc>();
@@ -96,6 +113,7 @@ namespace gamemanager.Models
                             Id = (int)reader["id"],
                             ParentGameId = (long)reader["parentgameid"],
                             Name = reader["name"].ToString(),
+                            Store = reader["store"].ToString(),
                             Price = (decimal)reader["price"],
                             Owned = (bool)reader["owned"],
                             Notes = reader["notes"].ToString(),
@@ -109,6 +127,11 @@ namespace gamemanager.Models
             return list;
         }
 
+        /// <summary>
+        /// Deletes the specified DLC from the database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal bool DeleteDlc(int id)
         {
             using (NpgsqlConnection conn = GetConnection())
@@ -139,6 +162,10 @@ namespace gamemanager.Models
             }
         }
 
+        /// <summary>
+        /// Fixes any inconsistencies in the rankings
+        /// </summary>
+        /// <param name="itemType"></param>
         internal void AdjustRankings(ItemType itemType)
         {
             int i = 0;
@@ -153,7 +180,7 @@ namespace gamemanager.Models
                     {
                         game.Ranking = (short)i;
                         var result = EditGame(game);
-                        
+
                         if (!result)
                         {
                             throw new Exception("There was a problem updating the rankings");
@@ -192,6 +219,12 @@ namespace gamemanager.Models
             }
         }
 
+        /// <summary>
+        /// Edits a DLC entry to match the supplied object
+        /// </summary>
+        /// <param name="dlc"></param>
+        /// <param name="adjustRankings"></param>
+        /// <returns></returns>
         internal bool EditDlc(Dlc dlc, bool adjustRankings = false)
         {
             //If the game is owned, adjust rankings accordingly
@@ -211,7 +244,7 @@ namespace gamemanager.Models
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = "UPDATE dlc SET name = @p, parentgameid = @p2, owned = @p3,";
-                        cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7 ";
+                        cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7, store = @p9 ";
                         cmd.CommandText += " WHERE id = @p8";
 
                         if (dlc.Id == 0)
@@ -228,6 +261,15 @@ namespace gamemanager.Models
                             cmd.Parameters.AddWithValue("p2", dlc.ParentGameId);
                         }
 
+                        if (dlc.Store != null)
+                        {
+                            cmd.Parameters.AddWithValue("p9", dlc.Store);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p9", DBNull.Value);
+                        }
+
                         if (dlc.Name != null)
                         {
                             cmd.Parameters.AddWithValue("p", dlc.Name);
@@ -235,7 +277,7 @@ namespace gamemanager.Models
                         else
                         {
                             throw new Exception("Name cannot be null!");
-                        }                        
+                        }
 
                         if (dlc.Notes != null)
                         {
@@ -254,8 +296,6 @@ namespace gamemanager.Models
 
                         cmd.ExecuteNonQuery();
                     }
-
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -269,8 +309,15 @@ namespace gamemanager.Models
                 AdjustRankings(ItemType.Dlc);
             }
 
+            return true;
+
         }
 
+        /// <summary>
+        /// Gets a game matching the supplied ID
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal GameEntry GetGame(int id)
         {
             GameEntry game = new GameEntry();
@@ -294,6 +341,7 @@ namespace gamemanager.Models
                             {
                                 Id = (int)reader["id"],
                                 Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
                                 Price = (decimal)reader["price"],
                                 Genre = reader["genre"].ToString(),
                                 Owned = (bool)reader["owned"],
@@ -309,14 +357,107 @@ namespace gamemanager.Models
             return game;
         }
 
-        internal bool DeleteGame(int id)
-        {            
+        /// <summary>
+        /// Gets a game which matches the supplied ranking
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <returns></returns>
+        internal GameEntry GetGameByRanking(int rank)
+        {
+            GameEntry game = new GameEntry();
 
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
 
-               
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from games where ranking = @p";
+                    cmd.Parameters.AddWithValue("p", rank);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new GameEntry()
+                            {
+                                Id = (int)reader["id"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Genre = reader["genre"].ToString(),
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                            };
+                        }
+                    }
+                }
+            }
+
+            return game;
+        }
+
+        /// <summary>
+        /// Gets a DLC which matches the supplied ranking
+        /// </summary>
+        /// <param name="rank"></param>
+        /// <returns></returns>
+        internal Dlc GetDlcByRanking(int rank)
+        {
+            Dlc dlc = new Dlc();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from dlc where ranking = @p";
+                    cmd.Parameters.AddWithValue("p", rank);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dlc = new Dlc()
+                            {
+                                Id = (int)reader["id"],
+                                ParentGameId = (long)reader["parentgameid"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                            };
+                        }
+                    }
+                }
+            }
+
+            return dlc;
+        }
+
+        /// <summary>
+        /// Deletes a game item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal bool DeleteGame(int id)
+        {
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
@@ -340,6 +481,11 @@ namespace gamemanager.Models
             }
         }
 
+        /// <summary>
+        /// Gets a single DLC item
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal Dlc GetDlc(int id)
         {
             Dlc game = new Dlc();
@@ -364,6 +510,7 @@ namespace gamemanager.Models
                                 Id = (int)reader["id"],
                                 ParentGameId = (long)reader["parentgameid"],
                                 Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
                                 Price = (decimal)reader["price"],
                                 Owned = (bool)reader["owned"],
                                 Notes = reader["notes"].ToString(),
@@ -378,6 +525,11 @@ namespace gamemanager.Models
             return game;
         }
 
+        /// <summary>
+        /// Gets all dlc for a specified game
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         internal Dictionary<int, Dlc> GetDlcForGame(int id)
         {
             Dictionary<int, Dlc> data = new Dictionary<int, Dlc>();
@@ -399,7 +551,8 @@ namespace gamemanager.Models
                             ParentGameId = (long)reader["parentgameid"],
                             Id = (int)reader["id"],
                             Name = reader["name"].ToString(),
-                            Price = (decimal)reader["price"],                            
+                            Store = reader["store"].ToString(),
+                            Price = (decimal)reader["price"],
                             Owned = (bool)reader["owned"],
                             Notes = reader["notes"].ToString(),
                             Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
@@ -412,6 +565,11 @@ namespace gamemanager.Models
             return data;
         }
 
+        /// <summary>
+        /// Creates a new game entry
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
         internal bool InsertGame(GameEntry game)
         {
             using (NpgsqlConnection conn = GetConnection())
@@ -424,9 +582,9 @@ namespace gamemanager.Models
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandText = "INSERT INTO games (name, genre, owned, price, notes, ranking, rating)";
-                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7)";
-                       
+                        cmd.CommandText = "INSERT INTO games (name, genre, owned, price, notes, ranking, rating, store)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7, @p8)";
+
                         if (game.Name != null)
                         {
                             cmd.Parameters.AddWithValue("p", game.Name);
@@ -434,6 +592,15 @@ namespace gamemanager.Models
                         else
                         {
                             throw new Exception("Name cannot be null!");
+                        }
+
+                        if (game.Store != null)
+                        {
+                            cmd.Parameters.AddWithValue("p8", game.Store);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p8", DBNull.Value);
                         }
 
                         if (game.Genre != null)
@@ -472,6 +639,11 @@ namespace gamemanager.Models
 
         }
 
+        /// <summary>
+        /// Creates a new DLC entry
+        /// </summary>
+        /// <param name="dlc"></param>
+        /// <returns></returns>
         internal bool InsertDlc(ViewModels.DlcViewModel dlc)
         {
             using (NpgsqlConnection conn = GetConnection())
@@ -484,8 +656,8 @@ namespace gamemanager.Models
                     using (var cmd = new NpgsqlCommand())
                     {
                         cmd.Connection = conn;
-                        cmd.CommandText = "INSERT INTO dlc (parentgameid, name, owned, price, notes, ranking, rating)";
-                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7)";
+                        cmd.CommandText = "INSERT INTO dlc (parentgameid, name, owned, price, notes, ranking, rating, store)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4, @p5, @p6, @p7, @p8)";
 
                         if (dlc.Name != null)
                         {
@@ -494,6 +666,15 @@ namespace gamemanager.Models
                         else
                         {
                             throw new Exception("Name cannot be null!");
+                        }
+
+                        if (dlc.Store != null)
+                        {
+                            cmd.Parameters.AddWithValue("p8", dlc.Store);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p8", DBNull.Value);
                         }
 
                         if (dlc.ParentGameId != 0)
@@ -531,6 +712,12 @@ namespace gamemanager.Models
             }
         }
 
+        /// <summary>
+        /// Edits a game entry
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="adjustRankings"></param>
+        /// <returns></returns>
         internal bool EditGame(GameEntry game, bool adjustRankings = false)
         {
 
@@ -539,7 +726,7 @@ namespace gamemanager.Models
             {
                 game.Ranking = 0;
             }
-           
+
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
@@ -551,7 +738,7 @@ namespace gamemanager.Models
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = "UPDATE games SET name = @p, genre = @p2, owned = @p3,";
-                        cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7 ";
+                        cmd.CommandText += " price = @p4, notes = @p5, ranking = @p6, rating = @p7, store = @p9 ";
                         cmd.CommandText += " WHERE id = @p8";
 
                         if (game.Id == 0)
@@ -568,6 +755,15 @@ namespace gamemanager.Models
                             throw new Exception("Name cannot be null!");
                         }
 
+                        if (game.Store != null)
+                        {
+                            cmd.Parameters.AddWithValue("p9", game.Store);
+                        }
+                        else
+                        {
+                            cmd.Parameters.AddWithValue("p9", DBNull.Value);
+                        }
+
                         if (game.Genre != null)
                         {
                             cmd.Parameters.AddWithValue("p2", game.Genre);
@@ -575,8 +771,8 @@ namespace gamemanager.Models
                         else
                         {
                             cmd.Parameters.AddWithValue("p2", DBNull.Value);
-                        }                       
-                        
+                        }
+
                         if (game.Notes != null)
                         {
                             cmd.Parameters.AddWithValue("p5", game.Notes);
@@ -594,8 +790,6 @@ namespace gamemanager.Models
 
                         cmd.ExecuteNonQuery();
                     }
-
-                    return true;
                 }
                 catch (Exception ex)
                 {
@@ -609,9 +803,13 @@ namespace gamemanager.Models
                 AdjustRankings(ItemType.Game);
             }
 
-
+            return true;
         }
 
+        /// <summary>
+        /// Gets all games
+        /// </summary>
+        /// <returns></returns>
         public List<GameEntry> GetAllGames()
         {
             List<GameEntry> list = new List<GameEntry>();
@@ -631,6 +829,7 @@ namespace gamemanager.Models
                         {
                             Id = (int)reader["id"],
                             Name = reader["name"].ToString(),
+                            Store = reader["store"].ToString(),
                             Price = (decimal)reader["price"],
                             Genre = reader["genre"].ToString(),
                             Owned = (bool)reader["owned"],
@@ -643,6 +842,6 @@ namespace gamemanager.Models
             }
 
             return list;
-        }       
+        }
     }
 }

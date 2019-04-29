@@ -18,6 +18,7 @@ namespace gamemanager.Models
         public string Notes { get; set; }
         public short Rating { get; set; }
         public short Ranking { get; set; }
+        public string Store { get; set; }
 
         public static explicit operator Dlc(DlcViewModel v)
         {
@@ -30,7 +31,8 @@ namespace gamemanager.Models
                 ParentGameId = v.ParentGameId,
                 Price = v.Price,
                 Ranking = v.Ranking,
-                Rating = v.Rating
+                Rating = v.Rating,
+                Store = v.Store
             };
         }
     }

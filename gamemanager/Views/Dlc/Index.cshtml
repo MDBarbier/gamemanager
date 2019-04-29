@@ -10,7 +10,7 @@
     <h1>Dlc</h1>    
 </div>
 
-<div class="container">
+<div class="container container-content">
 
     @{//check for message in viewbag
         string message = ViewBag.Message == null ? string.Empty : ViewBag.Message;}
@@ -36,13 +36,15 @@
         <div class="table table-striped">
             <table>
                 <thead>
-                    <tr>                        
-                        <th>Parent Game</th>
-                        <th>Name</th>
+                    <tr>          
+                        <th></th>
+                        <th>Parent Game</th>                        
+                        <th class="w-25">Name</th>
                         <th>Owned</th>
                         <th>Price</th>
                         <th>Rating</th>
                         <th>Ranking</th>
+                        <th>Store</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -54,20 +56,62 @@
                             var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
                             var computedOwnership = item.Owned ? "Yes" : "No";
                             var computedRating = item.Owned ? item.Rating.ToString() : "N/A";
-                        <tr>
-                                                        
-                            <td>@item.ParentGameName</td>
-                            <td>@item.Name</td>
-                            <td>@computedOwnership</td>
-                            <td>@computedPrice</td>
-                            <td>@computedRating</td>
-                            <td>@computedRanking</td>
-                            <td>
-                                <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Dlc", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
-                                <button class="btn btn-secondary" onclick="window.confirm('Are you sure?'); location.href='@Url.Action("Delete", "Dlc", new { id = item.Id })'" title="Delete" value="Delete">Delete</button>
-                            </td>
+                    <tr>
 
-                        </tr>
+                        <td>
+                            @if (computedRanking != "N/A")
+                            {
+                                if (item.Ranking != Model.Count)
+                                {
+                                    <a href="@Url.Action("RankChange", "Dlc", new { id = item.Id, increase = false })"><img src="~/resources/arrow_down.png" width="20" height="20" class="d-inline" /></a>
+                                }
+                                else
+                                {
+                                    <img src="~/resources/arrow_down_hollow.png" width="20" height="20" class="d-inline" />
+                                }
+
+                                if (item.Ranking != 1)
+                                {
+                                    <a href="@Url.Action("RankChange", "Dlc", new { id = item.Id, increase = true })"><img src="~/resources/arrow_up.png" width="20" height="20" class="d-inline" style="margin-right:2px;" /></a>
+                                }
+                                else
+                                {
+                                    <img src="~/resources/arrow_up_hollow.png" width="20" height="20" class="d-inline" style="margin-right:2px;" />
+                                }
+
+                            }
+                        </td>
+                        <td>@item.ParentGameName</td>
+                        <td>@item.Name</td>
+                        <td>@computedOwnership</td>
+                        <td>@computedPrice</td>
+                        <td>@computedRating</td>
+                        <td>@computedRanking</td>
+                        <td>
+                            @switch (item.Store)
+                            {
+                                case "steam":
+                                    <img src="~/resources/steam.png" width="20" height="20" class="d-inline" />
+                                    break;
+                                case "epic":
+                                    <img src="~/resources/epic.png" width="20" height="20" class="d-inline" />
+                                    break;
+                                case "uplay":
+                                    <img src="~/resources/Uplay.png" width="20" height="20" class="d-inline" />
+                                    break;
+                                case "humble":
+                                    <img src="~/resources/humble.png" width="20" height="20" class="d-inline" />
+                                    break;
+                                default:
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            <button class="btn btn-secondary" onclick="location.href='@Url.Action("Edit", "Dlc", new { id = item.Id })'" title="Edit" value="Edit">Edit</button>
+                            <button class="btn btn-secondary" onclick="window.confirm('Are you sure?'); location.href='@Url.Action("Delete", "Dlc", new { id = item.Id })'" title="Delete" value="Delete">Delete</button>
+                        </td>
+
+                    </tr>
 
                     }
                     </tbody>

@@ -9,7 +9,7 @@
 <form asp-action="Save" method="post">
     <div>
         <label asp-for="Id"></label>
-        <input asp-for="Id" readonly/>
+        <input asp-for="Id" readonly />
     </div>
     <div>
         <label asp-for="Name"></label>
@@ -45,6 +45,11 @@
         <label asp-for="Ranking"></label>
         <input asp-for="Ranking" />
         <span asp-validation-for="Ranking"></span>
+    </div>
+    <div>
+        <label asp-for="Store"></label>
+        <input asp-for="Store" />
+        <span asp-validation-for="Store"></span>
     </div>
     @Html.AntiForgeryToken()
     <div>

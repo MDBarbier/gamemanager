@@ -17,4 +17,10 @@
     <PackageReference Include="popper.js" Version="1.14.3" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="wwwroot\resources\arrow_down.png" />
+    <None Include="wwwroot\resources\arrow_up.png" />
+  </ItemGroup>
+
 </Project>

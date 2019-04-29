@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 
 namespace gamemanager.Controllers
 {
@@ -51,7 +52,8 @@ namespace gamemanager.Controllers
                     ParentGameName = parentGame.Name,
                     Price = dlc.Price,
                     Ranking = dlc.Ranking,
-                    Rating = dlc.Rating
+                    Rating = dlc.Rating,
+                    Store = dlc.Store
                 };
 
                 dlcViewModel.Add(dlcvm);
@@ -69,6 +71,62 @@ namespace gamemanager.Controllers
 
             //Pass list to the view as Model
             return View(dlcViewModel);
+        }
+
+        [HttpGet]
+        public IActionResult RankChange(int id, bool increase)
+        {
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
+
+            var dlc = dc.GetDlc(id);
+            bool outcomeOfEdit = false;
+            bool outcomeOfOtherEdit = false;
+
+            if (dlc != null)
+            {
+                if (increase)
+                {
+                    dlc.Ranking--;
+
+                    //Get the game that is already in the new position, and move it the opposite way
+                    var otherDlc = dc.GetDlcByRanking(dlc.Ranking);
+
+                    if (otherDlc != null)
+                    {
+                        otherDlc.Ranking++;
+                        outcomeOfOtherEdit = dc.EditDlc(otherDlc);
+
+                        if (!outcomeOfOtherEdit)
+                        {
+                            throw new Exception("Error editing other item");
+                        }
+                    }
+                }
+                else
+                {
+                    dlc.Ranking++;
+
+                    //Get the game that is already in the new position, and move it the opposite way
+                    var otherDlc = dc.GetDlcByRanking(dlc.Ranking);
+
+                    if (otherDlc != null)
+                    {
+                        otherDlc.Ranking--;
+                        outcomeOfOtherEdit = dc.EditDlc(otherDlc);
+
+                        if (!outcomeOfOtherEdit)
+                        {
+                            throw new Exception("Error editing other item");
+                        }
+                    }
+                }
+
+                outcomeOfEdit = dc.EditDlc(dlc, true);
+            }
+
+            if (!outcomeOfEdit) HttpContext.Session.SetString("Message", "Problem changing rank");
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -179,6 +237,9 @@ namespace gamemanager.Controllers
 
             //Get list of games to populate the parent game dropdown list
             var games = dc.GetAllGames().Select(g => (g.Id, g.Name)).ToList();
+
+            //sort by name
+            games = games.OrderBy(g => g.Name).ToList();
 
             DlcViewModel dlcvm = new DlcViewModel();
             dlcvm.PotentialParentGames = new List<SelectListItem>();

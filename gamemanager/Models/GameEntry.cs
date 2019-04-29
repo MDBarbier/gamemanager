@@ -13,6 +13,7 @@ namespace gamemanager.Models
         public string Notes { get; set; }
         public short Rating { get; set; }
         public short Ranking { get; set; }
+        public string Store { get; set; }
         public Dictionary<int, Dlc> Dlc { get; set; }
 
 
@@ -28,7 +29,8 @@ namespace gamemanager.Models
                 Ranking = v.Ranking,
                 Rating = v.Rating,
                 Dlc = v.Dlc,
-                Genre = v.Genre
+                Genre = v.Genre,
+                Store = v.Store
             };
         }
     }

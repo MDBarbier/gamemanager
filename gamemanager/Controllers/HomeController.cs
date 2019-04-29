@@ -2,6 +2,7 @@
 using gamemanager.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -27,7 +28,7 @@ namespace gamemanager.Controllers
             }
             else
             {
-                data =  dc.GetAllGames().Where(a => a.Owned == false).ToList();
+                data = dc.GetAllGames().Where(a => a.Owned == false).ToList();
                 ViewBag.ShowOwned = "";
             }
 
@@ -56,13 +57,13 @@ namespace gamemanager.Controllers
 
             if (outcomeOfDelete) HttpContext.Session.SetString("Message", "Game deleted");
 
-            return RedirectToAction("Index");            
+            return RedirectToAction("Index");
         }
 
         public IActionResult OnlyOwned(bool status)
         {
-            HttpContext.Session.SetString("ShowOwned", status.ToString());            
-            
+            HttpContext.Session.SetString("ShowOwned", status.ToString());
+
             return RedirectToAction("Index");
         }
 
@@ -90,8 +91,8 @@ namespace gamemanager.Controllers
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
             bool outcomeOfSave = dc.EditGame(game, true);
-            
-            if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");            
+
+            if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
 
             return RedirectToAction("Index");
         }
@@ -125,7 +126,63 @@ namespace gamemanager.Controllers
             {
                 return View("New", game);
             }
-            
+
+        }
+
+        [HttpGet]
+        public IActionResult RankChange(int id, bool increase)
+        {
+            //This row uses setup in the Startup.cs file
+            DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
+
+            var game = dc.GetGame(id);
+            bool outcomeOfEdit = false;
+            bool outcomeOfOtherEdit = false;
+
+            if (game != null)
+            {
+                if (increase)
+                {
+                    game.Ranking--;
+
+                    //Get the game that is already in the new position, and move it the opposite way
+                    var otherGame = dc.GetGameByRanking(game.Ranking);
+
+                    if (otherGame != null)
+                    {
+                        otherGame.Ranking++;
+                        outcomeOfOtherEdit = dc.EditGame(otherGame);
+
+                        if (!outcomeOfOtherEdit)
+                        {
+                            throw new Exception("Error editing other item");
+                        }
+                    }
+                }
+                else
+                {
+                    game.Ranking++;
+
+                    //Get the game that is already in the new position, and move it the opposite way
+                    var otherGame = dc.GetGameByRanking(game.Ranking);
+
+                    if (otherGame != null)
+                    {
+                        otherGame.Ranking--;
+                        outcomeOfOtherEdit = dc.EditGame(otherGame);
+
+                        if (!outcomeOfOtherEdit)
+                        {
+                            throw new Exception("Error editing other item");
+                        }
+                    }
+                }
+
+                outcomeOfEdit = dc.EditGame(game, true);
+            }
+
+            if (!outcomeOfEdit) HttpContext.Session.SetString("Message", "Problem changing rank");
+            return RedirectToAction("Index");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

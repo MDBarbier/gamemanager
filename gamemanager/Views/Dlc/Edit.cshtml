@@ -45,6 +45,11 @@
         <input asp-for="Ranking" />
         <span asp-validation-for="Ranking"></span>
     </div>
+    <div>
+        <label asp-for="Store"></label>
+        <input asp-for="Store" />
+        <span asp-validation-for="Store"></span>
+    </div>
     @Html.AntiForgeryToken()
     <div>
         <input type="submit" value="Save" />

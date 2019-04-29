@@ -19,6 +19,7 @@ namespace gamemanager.ViewModels
         public string Notes { get; set; }
         public short Rating { get; set; }
         public short Ranking { get; set; }
+        public string Store { get; set; }
         public Dictionary<int, Dlc> Dlc { get; set; }
     }
 }
