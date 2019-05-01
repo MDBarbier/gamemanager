@@ -6,12 +6,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace gamemanager.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
@@ -23,12 +24,14 @@ namespace gamemanager.Controllers
             List<GameEntry> data = new List<GameEntry>();
             if (ShowOwned)
             {
-                data = dc.GetAllGames();
+                data = dc.GetAllGames().Where(a => a.Owned == true).ToList();
+                data = data.OrderBy(a => a.Name).ToList();
                 ViewBag.ShowOwned = "checked";
             }
             else
             {
                 data = dc.GetAllGames().Where(a => a.Owned == false).ToList();
+                data = data.OrderBy(a => a.Ranking).ToList();
                 ViewBag.ShowOwned = "";
             }
 
@@ -39,8 +42,27 @@ namespace gamemanager.Controllers
             //Clear message out so it's not shown multiple times
             HttpContext.Session.Remove("Message");
 
-            //sort list by ranking
-            data = data.OrderBy(a => a.Ranking).ToList();
+            //Update the prices of the games in the list from Steam data
+            Code.SteamPriceChecker spc = new Code.SteamPriceChecker();
+
+            foreach (var game in data)
+            {
+                //TODO add support for price checking other stores
+                if (game.Store != "steam")
+                    continue;
+
+                //get current price from steam
+                var appid = dc.GetGameAppId(game.Name);
+                if (appid == 0) continue;
+                var price = await spc.GetPrice(appid.ToString());
+                game.Price = price;
+
+                //update price in db and throw error if cannot
+                if (!dc.EditGame(game))
+                {
+                    throw new Exception("There was a problem editing the game");
+                }
+            }
 
             //Pass list to the view as Model
             return View(data);
@@ -119,7 +141,21 @@ namespace gamemanager.Controllers
                 }
 
                 bool outcomeOfSave = dc.InsertGame((GameEntry)game);
-                if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
+
+                if (outcomeOfSave)
+                {
+                    HttpContext.Session.SetString("Message", "Record Saved");
+
+                    //get game id
+                    var dbGame = dc.GetGameByName(game.Name);
+                    
+                    //add a new store data entry for this game
+                    if (!dc.InsertStoreDataEntry(dbGame.Id, game.StoreUrl))
+                    {
+                        HttpContext.Session.SetString("Error", "There was a problem entering store data for game");
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
             else

@@ -21,5 +21,6 @@ namespace gamemanager.ViewModels
         public short Ranking { get; set; }
         public string Store { get; set; }
         public Dictionary<int, Dlc> Dlc { get; set; }
+        public string StoreUrl { get; set; }
     }
 }

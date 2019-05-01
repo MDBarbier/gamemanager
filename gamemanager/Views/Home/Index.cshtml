@@ -4,11 +4,6 @@
     ViewData["Title"] = "Home Page";
 }
 
-
-<div class="jumbotron text-center">
-    <h1>Games</h1>
-</div>
-
 <div class="container container-content">
 
     @{//check for message in viewbag
@@ -37,12 +32,10 @@
                 <thead>
                     <tr>
                         <th></th>
+                        <th>Rank</th>
                         <th>Name</th>
-                        <th>Genre</th>
-                        <th>Owned</th>
-                        <th>Price</th>
-                        <th>Rating</th>
-                        <th>Ranking</th>
+                        <th>Genre</th>                        
+                        <th>Price</th>                       
                         <th>Store</th>
                         <th></th>
                     </tr>
@@ -52,7 +45,7 @@
                         @foreach (var item in Model)
                         {
                             var computedRanking = item.Owned ? "N/A" : item.Ranking.ToString();
-                            var computedPrice = item.Owned ? "N/A" : item.Price.ToString();
+                            var computedPrice = item.Owned ? "N/A" : (item.Price == 0) ? "N/A" : item.Price.ToString();
                             var computedOwnership = item.Owned ? "Yes" : "No";
                             var computedRating = item.Owned ? item.Rating.ToString() : "N/A";
                     <tr>
@@ -79,12 +72,10 @@
 
                             }
                         </td>
+                        <td>@computedRanking</td>
                         <td>@item.Name</td>
                         <td>@item.Genre</td>
-                        <td>@computedOwnership</td>
                         <td>@computedPrice</td>
-                        <td>@computedRating</td>
-                        <td>@computedRanking</td>
                         <td>
                             @switch (item.Store)
                             {

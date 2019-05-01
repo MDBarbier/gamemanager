@@ -219,6 +219,121 @@ namespace gamemanager.Models
             }
         }
 
+        internal GameEntry GetGameByName(string name)
+        {
+            GameEntry game = new GameEntry();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from games where name = @p";
+                    cmd.Parameters.AddWithValue("p", name);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new GameEntry()
+                            {
+                                Id = (int)reader["id"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Genre = reader["genre"].ToString(),
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                            };
+                        }
+                    }
+                }
+            }
+
+            return game;
+        }
+
+        internal bool InsertStoreDataEntry(int id, string storeUrl)
+        {
+            if (string.IsNullOrEmpty(storeUrl) || id == 0)
+            {
+                return false;
+            }
+
+            int appIdCalculated = int.Parse(storeUrl.Split('/')[4].ToString());
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                try
+                {
+                    // Insert some data
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "INSERT INTO storedata (storeurl, storename, appid, parentid)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4)";
+
+                        cmd.Parameters.AddWithValue("p", storeUrl);
+                        cmd.Parameters.AddWithValue("p2", "steam");
+                        cmd.Parameters.AddWithValue("p3", appIdCalculated);
+                        cmd.Parameters.AddWithValue("p4", id);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("There was an error trying to insert the row", ex);
+                }
+            }
+        }
+
+        internal bool InsertStoreDataDlcEntry(int id, string storeUrl)
+        {
+            if (string.IsNullOrEmpty(storeUrl) || id == 0)
+            {
+                return false;
+            }
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                try
+                {
+                    // Insert some data
+                    using (var cmd = new NpgsqlCommand())
+                    {
+                        cmd.Connection = conn;
+                        cmd.CommandText = "INSERT INTO storedatadlc (storeurl, storename, appid, parentid)";
+                        cmd.CommandText += " VALUES (@p, @p2, @p3, @p4)";
+
+                        cmd.Parameters.AddWithValue("p", storeUrl);
+                        cmd.Parameters.AddWithValue("p2", "steam");
+                        cmd.Parameters.AddWithValue("p3", storeUrl.Split('/')[4].ToString());
+                        cmd.Parameters.AddWithValue("p4", id);
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("There was an error trying to insert the row", ex);
+                }
+            }
+        }
+
         /// <summary>
         /// Edits a DLC entry to match the supplied object
         /// </summary>
@@ -842,6 +957,142 @@ namespace gamemanager.Models
             }
 
             return list;
+        }
+
+        public int GetGameAppId(string name)
+        {
+            GameEntry game = new GameEntry();
+            StoreData storeData = new StoreData();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+                                
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from games where name = @p";
+                    cmd.Parameters.AddWithValue("p", name);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new GameEntry()
+                            {
+                                Id = (int)reader["id"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Genre = reader["genre"].ToString(),
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                            };
+                        }
+                    }
+                }
+
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from storedata where parentid = @p";
+                    cmd.Parameters.AddWithValue("p", game.Id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            storeData = new StoreData()
+                            {
+                                Id = (long)reader["id"],
+                                StoreName = reader["storename"].ToString(),
+                                StoreUrl = reader["storeurl"].ToString(),
+                                AppId = (int)reader["appid"],
+                                ParentId = (int)reader["parentid"]
+                            };
+                        }
+                    }
+                }
+
+                if (storeData != null)
+                {
+                    return storeData.AppId;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
+        }
+
+        public int GetDlcAppId(string name)
+        {
+            Dlc game = new Dlc();
+            StoreDataDlc storeData = new StoreDataDlc();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from dlc where name = @p";
+                    cmd.Parameters.AddWithValue("p", name);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new Dlc()
+                            {
+                                Id = (int)reader["id"],
+                                ParentGameId = (long)reader["parentgameid"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"]
+                            };
+                        }
+                    }
+                }
+
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from storedatadlc where parentid = @p";
+                    cmd.Parameters.AddWithValue("p", game.Id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            storeData = new StoreDataDlc()
+                            {
+                                Id = (long)reader["id"],
+                                StoreName = reader["storename"].ToString(),
+                                StoreUrl = reader["storeurl"].ToString(),
+                                AppId = (int)reader["appid"],
+                                ParentId = (int)reader["parentid"]
+                            };
+                        }
+                    }
+                }
+
+                if (storeData != null)
+                {
+                    return storeData.AppId;
+                }
+                else
+                {
+                    return 0;
+                }
+            }
         }
     }
 }
