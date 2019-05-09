@@ -258,6 +258,45 @@ namespace gamemanager.Models
             return game;
         }
 
+        internal Dlc GetDlcByName(string name)
+        {
+            Dlc dlc = new Dlc();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from dlc where name = @p";
+                    cmd.Parameters.AddWithValue("p", name);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            dlc = new Dlc()
+                            {
+                                Id = (int)reader["id"],
+                                Name = reader["name"].ToString(),
+                                Store = reader["store"].ToString(),
+                                Price = (decimal)reader["price"],
+                                Owned = (bool)reader["owned"],
+                                Notes = reader["notes"].ToString(),
+                                Ranking = reader["ranking"] == DBNull.Value ? (short)-1 : (short)reader["ranking"],
+                                Rating = reader["rating"] == DBNull.Value ? (short)-1 : (short)reader["rating"],
+                                ParentGameId = reader["parentgameid"] == DBNull.Value ? (long)-1 : (long)reader["parentgameid"]
+                            };
+                        }
+                    }
+                }
+            }
+
+            return dlc;
+        }
+
         internal bool InsertStoreDataEntry(int id, string storeUrl)
         {
             if (string.IsNullOrEmpty(storeUrl) || id == 0)
@@ -299,6 +338,8 @@ namespace gamemanager.Models
 
         internal bool InsertStoreDataDlcEntry(int id, string storeUrl)
         {
+            int appIdCalculated = int.Parse(storeUrl.Split('/')[4].ToString());
+
             if (string.IsNullOrEmpty(storeUrl) || id == 0)
             {
                 return false;
@@ -319,7 +360,7 @@ namespace gamemanager.Models
 
                         cmd.Parameters.AddWithValue("p", storeUrl);
                         cmd.Parameters.AddWithValue("p2", "steam");
-                        cmd.Parameters.AddWithValue("p3", storeUrl.Split('/')[4].ToString());
+                        cmd.Parameters.AddWithValue("p3", appIdCalculated);
                         cmd.Parameters.AddWithValue("p4", id);
 
                         cmd.ExecuteNonQuery();
@@ -967,7 +1008,7 @@ namespace gamemanager.Models
             using (NpgsqlConnection conn = GetConnection())
             {
                 conn.Open();
-                                
+
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;

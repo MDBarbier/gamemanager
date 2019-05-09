@@ -19,6 +19,7 @@ namespace gamemanager.ViewModels
         public string Store { get; set; }
         public SelectListItem ParentGame { get; set; }
         public List<SelectListItem> PotentialParentGames { get; set; } = new List<SelectListItem>();
+        public string StoreUrl { get; set; }
 
     }
 }

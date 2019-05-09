@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj": {}
+    "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj": {}
   },
   "projects": {
-    "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj": {
+    "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
+        "projectUniqueName": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
         "projectName": "gamemanager",
-        "projectPath": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
-        "packagesPath": "C:\\Users\\matt\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\matt\\Documents\\GitHub\\gamemanager\\gamemanager\\obj\\",
+        "projectPath": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\gamemanager.csproj",
+        "packagesPath": "C:\\Users\\matth\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\matth\\Documents\\GitHub\\gamemanager\\gamemanager\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\matt\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\matth\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,13 +25,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore-tooling/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/aspnet-aspnetcore/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/aspnet-entityframeworkcore/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/aspnet-extensions/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/dotnet-core/index.json": {},
-          "https://dotnetfeed.blob.core.windows.net/dotnet-windowsdesktop/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp2.2": {

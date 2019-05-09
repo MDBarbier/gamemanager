@@ -48,6 +48,11 @@
         <input asp-for="Store" />
         <span asp-validation-for="Store"></span>
     </div>
+    <div>
+        <label asp-for="StoreUrl"></label>
+        <input asp-for="StoreUrl" />
+        <span asp-validation-for="StoreUrl"></span>
+    </div>
     @Html.AntiForgeryToken()
     <div>
         <input type="submit" value="Save" />

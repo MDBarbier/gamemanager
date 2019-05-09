@@ -41,37 +41,6 @@ namespace gamemanager.Controllers
             List<GameEntry> games = dc.GetAllGames().Where(a => a.Owned == true).ToList();
             List<DlcViewModel> dlcViewModel = new List<DlcViewModel>();
 
-            //assign to list of view models and get the parent game names
-            foreach (var dlc in data)
-            {
-                var parentGame = games.Where(a => a.Id == dlc.ParentGameId).FirstOrDefault();
-
-                DlcViewModel dlcvm = new DlcViewModel()
-                {
-                    Id = dlc.Id,
-                    Name = dlc.Name,
-                    Notes = dlc.Notes,
-                    Owned = dlc.Owned,
-                    ParentGameId = dlc.ParentGameId,
-                    ParentGameName = parentGame.Name,
-                    Price = dlc.Price,
-                    Ranking = dlc.Ranking,
-                    Rating = dlc.Rating,
-                    Store = dlc.Store
-                };
-
-                dlcViewModel.Add(dlcvm);
-            }
-
-            //sort list by ranking
-            dlcViewModel = dlcViewModel.OrderBy(a => a.Ranking).ToList();
-
-            //Assign any message to the viewbag      
-            string message = HttpContext.Session.GetString("Message");
-            ViewBag.Message = message;
-
-            //Clear message out so it's not shown multiple times
-            HttpContext.Session.Remove("Message");
 
             //Update the prices of the games in the list from Steam data
             Code.SteamPriceChecker spc = new Code.SteamPriceChecker();
@@ -94,6 +63,38 @@ namespace gamemanager.Controllers
                     throw new Exception("There was a problem editing the game");
                 }
             }
+
+            //assign to list of view models and get the parent game names
+            foreach (var dlc in data)
+            {
+                var parentGame = games.Where(a => a.Id == dlc.ParentGameId).FirstOrDefault();
+
+                DlcViewModel dlcvm = new DlcViewModel()
+                {
+                    Id = dlc.Id,
+                    Name = dlc.Name,
+                    Notes = dlc.Notes,
+                    Owned = dlc.Owned,
+                    ParentGameId = dlc.ParentGameId,
+                    ParentGameName = parentGame.Name,
+                    Price = dlc.Price,
+                    Ranking = dlc.Ranking,
+                    Rating = dlc.Rating,
+                    Store = dlc.Store
+                };
+
+                dlcViewModel.Add(dlcvm);
+            }
+            
+            //sort list by ranking
+            dlcViewModel = dlcViewModel.OrderBy(a => a.Ranking).ToList();
+
+            //Assign any message to the viewbag      
+            string message = HttpContext.Session.GetString("Message");
+            ViewBag.Message = message;
+
+            //Clear message out so it's not shown multiple times
+            HttpContext.Session.Remove("Message");            
 
             //Pass list to the view as Model
             return View(dlcViewModel);
@@ -227,14 +228,28 @@ namespace gamemanager.Controllers
                 }
 
                 bool outcomeOfSave = dc.InsertDlc(dlc);
-                if (outcomeOfSave) HttpContext.Session.SetString("Message", "Dlc Saved");
+
+                if (outcomeOfSave)
+                {
+                    HttpContext.Session.SetString("Message", "Record Saved");
+
+                    //get game id
+                    var dbGame = dc.GetDlcByName(dlc.Name);
+
+                    //add a new store data entry for this game
+                    if (!dc.InsertStoreDataDlcEntry(dbGame.Id, dlc.StoreUrl))
+                    {
+                        HttpContext.Session.SetString("Error", "There was a problem entering store data for game");
+                    }
+                }
+
                 return RedirectToAction("Index");
             }
             else
             {
                 //repopulate list of games to populate the parent game dropdown list
                 var games = dc.GetAllGames().Select(g => (g.Id, g.Name)).ToList();
-                
+
                 //assign the list of possible parent games to the games property of the vm
                 foreach (var (Id, Name) in games)
                 {
@@ -277,7 +292,7 @@ namespace gamemanager.Controllers
             }
 
             return View(dlcvm);
-        }       
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

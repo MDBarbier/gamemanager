@@ -69,3 +69,4 @@ C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\R
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\_ViewImports.cshtml.g.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\Razor\Views\_ViewStart.cshtml.g.cs
 C:\Users\matt\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
+C:\Users\matth\Documents\GitHub\gamemanager\gamemanager\obj\Debug\netcoreapp2.2\gamemanager.csprojAssemblyReference.cache
