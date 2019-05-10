@@ -22,5 +22,23 @@ namespace gamemanager.ViewModels
         public string Store { get; set; }
         public Dictionary<int, Dlc> Dlc { get; set; }
         public string StoreUrl { get; set; }
+
+        public GameViewModel()
+        {
+
+        }
+
+        public GameViewModel(GameEntry game)
+        {
+            Id = game.Id;           
+            Name = game.Name;
+            Owned = game.Owned;
+            Price = game.Price;
+            Notes = game.Notes;
+            Rating = game.Rating;
+            Ranking = game.Ranking;
+            Store = game.Store;
+            Genre = game.Genre;
+        }
     }
 }

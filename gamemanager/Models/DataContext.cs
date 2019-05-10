@@ -681,6 +681,78 @@ namespace gamemanager.Models
             return game;
         }
 
+        internal StoreDataDlc GetDlcStoreData(int id)
+        {
+            StoreDataDlc game = new StoreDataDlc();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from storedatadlc where parentid = @p";
+                    cmd.Parameters.AddWithValue("p", id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new StoreDataDlc()
+                            {
+                                Id = (long)reader["id"],
+                                StoreName = reader["storename"].ToString(),
+                                StoreUrl = reader["storeurl"].ToString(),
+                                AppId = reader["appid"] == DBNull.Value ? -1 : (int)reader["appid"],
+                                ParentId = reader["parentid"] == DBNull.Value ? -1 : (int)reader["parentid"]
+                                
+                            };
+                        }
+                    }
+                }
+            }
+
+            return game;
+        }
+
+        internal StoreData GetStoreData(int id)
+        {
+            StoreData game = new StoreData();
+
+            using (NpgsqlConnection conn = GetConnection())
+            {
+                conn.Open();
+
+                // Insert some data
+                using (var cmd = new NpgsqlCommand())
+                {
+                    cmd.Connection = conn;
+                    cmd.CommandText = "select * from storedata where parentid = @p";
+                    cmd.Parameters.AddWithValue("p", id);
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            game = new StoreData()
+                            {
+                                Id = (long)reader["id"],
+                                StoreName = reader["storename"].ToString(),
+                                StoreUrl = reader["storeurl"].ToString(),
+                                AppId = reader["appid"] == DBNull.Value ? -1 : (int)reader["appid"],
+                                ParentId = reader["parentid"] == DBNull.Value ? -1 : (int)reader["parentid"]
+
+                            };
+                        }
+                    }
+                }
+            }
+
+            return game;
+        }
+
         /// <summary>
         /// Gets all dlc for a specified game
         /// </summary>

@@ -102,17 +102,30 @@ namespace gamemanager.Controllers
             //Get the game that relates to the id provided
             var data = dc.GetGame(id);
 
+            GameViewModel vm = new GameViewModel(data);
+
+            var storeData = dc.GetStoreData(id);
+
+            if (storeData == null)
+            {
+                HttpContext.Session.SetString("Error", "There was a problem entering store data for game");
+                return RedirectToAction("Index");
+            }
+
+            vm.StoreUrl = storeData.StoreUrl;
+            vm.Store = storeData.StoreName;
+
             //Pass list to the view as Model
-            return View(data);
+            return View(vm);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Save(GameEntry game)
+        public IActionResult Save(GameViewModel game)
         {
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.EditGame(game, true);
+            bool outcomeOfSave = dc.EditGame((GameEntry)game, true);
 
             if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
 

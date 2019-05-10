@@ -171,7 +171,7 @@ namespace gamemanager.Controllers
 
         public IActionResult AddDlc(int Id)
         {
-            Dlc dlc = new Dlc() { ParentGameId = Id };
+            DlcViewModel dlc = new DlcViewModel() { ParentGameId = Id };
             return View(dlc);
         }
 
@@ -194,12 +194,12 @@ namespace gamemanager.Controllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult Save(Dlc dlc)
+        public IActionResult Save(DlcViewModel dlc)
         {
             //This row uses setup in the Startup.cs file
             DataContext dc = HttpContext.RequestServices.GetService(typeof(DataContext)) as DataContext;
 
-            bool outcomeOfSave = dc.EditDlc(dlc, true);
+            bool outcomeOfSave = dc.EditDlc((Dlc)dlc, true);
 
             if (outcomeOfSave) HttpContext.Session.SetString("Message", "Record Saved");
 
@@ -267,8 +267,21 @@ namespace gamemanager.Controllers
             //Get the game that relates to the id provided
             var data = dc.GetDlc(id);
 
+            DlcViewModel dlcvm = new DlcViewModel(data);
+
+            var storeData = dc.GetDlcStoreData(id);
+
+            if (storeData == null)
+            {
+                HttpContext.Session.SetString("Error", "There was a problem entering store data for game");
+                return RedirectToAction("Index");
+            }
+
+            dlcvm.StoreUrl = storeData.StoreUrl;
+            dlcvm.Store = storeData.StoreName;
+            
             //Pass list to the view as Model
-            return View(data);
+            return View(dlcvm);
         }
 
         public IActionResult New()
