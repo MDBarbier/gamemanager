@@ -27,4 +27,11 @@
     <None Include="wwwroot\resources\arrow_up.png" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Content Update="wwwroot\Config\secureappsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

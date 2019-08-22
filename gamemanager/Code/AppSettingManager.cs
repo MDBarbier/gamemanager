@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace gamemanager.Code
 {
@@ -13,13 +14,18 @@ namespace gamemanager.Code
         public Dictionary<string, string> AppSettings { get; set; } = new Dictionary<string, string>();
 
         public AppSettingManager()
-        {
+        {            
+            string basePath = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
 
-#if DEBUG
-            Path = @"C:\AppSettings\Settings.json";
-#else
-            Path = @"/dotnetapps/gamemanager/Settings.json";
-#endif
+            if (basePath.Contains("/"))
+            {
+                Path = basePath + @"/wwwroot/Config/secureappsettings.json";
+            }
+            else
+            {
+                Path = basePath + @"\wwwroot\Config\secureappsettings.json";
+            }
+            
 
             LoadSettings();
         }
@@ -34,7 +40,7 @@ namespace gamemanager.Code
 
             if (!File.Exists(Path))
             {
-                throw new FileNotFoundException("AppSettings File not found!");
+                throw new FileNotFoundException($"AppSettings File not found at path {Path}!");
             }
 
             using (StreamReader r = new StreamReader(Path))
